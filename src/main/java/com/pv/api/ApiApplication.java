@@ -9,7 +9,7 @@ public class ApiApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ApiApplication.class, args);
 
-		Person person = new Person("Juan", "Perez");
+		Person person = new Person("Orquestador", "IA CRP");
 		System.out.println(person.sayHello());
 	}
 

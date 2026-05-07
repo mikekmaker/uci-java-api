@@ -11,7 +11,7 @@ public class Person {
     }
 
     public String sayHello() {
-        return "Hello, my name is " + name + " " + lastname;
+        return "Se ha iniciado el servicio " + name + " " + lastname;
     }
 
     public String getName() { return name; }
