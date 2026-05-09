@@ -18,7 +18,7 @@ public class JwtTokenProvider {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    private final long validityInMs = 3600000; // 1h
+    private final long validityInMs = 1000L * 60 * 60 * 24; // 1h
 
     public String generateToken(String username) {
 

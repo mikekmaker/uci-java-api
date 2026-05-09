@@ -11,6 +11,7 @@ import com.pv.api.domain.model.User;
 import com.pv.api.domain.repository.AuditoriaDetalleRepository;
 import com.pv.api.domain.repository.AuditoriaRepository;
 import com.pv.api.domain.repository.UserRepository;
+import com.pv.api.infrastructure.persistence.mapper.AuditoriaDetalleResponseMapper;
 import com.pv.api.infrastructure.persistence.mapper.CodeAnalysisMapper;
 import org.springframework.stereotype.Service;
 import com.pv.api.domain.service.CodeAnalysisClient;
@@ -26,6 +27,7 @@ public class AnalyzeAuditoriaUseCaseImpl
     private final UserRepository userRepository;
     private final CodeAnalysisClient codeAnalysisClient;
     private final CodeAnalysisMapper codeAnalysisMapper;
+    private final AuditoriaDetalleResponseMapper auditoriaDetalleResponseMapper;
 
     private final AuditoriaDetalleRepository auditoriaDetalleRepository;
 
@@ -34,19 +36,22 @@ public class AnalyzeAuditoriaUseCaseImpl
             UserRepository userRepository,
             CodeAnalysisClient codeAnalysisClient,
             CodeAnalysisMapper codeAnalysisMapper,
-            AuditoriaDetalleRepository auditoriaDetalleRepository
+            AuditoriaDetalleRepository auditoriaDetalleRepository,
+            AuditoriaDetalleResponseMapper auditoriaDetalleResponseMapper
     ) {
         this.auditoriaRepository = auditoriaRepository;
         this.userRepository = userRepository;
         this.codeAnalysisClient = codeAnalysisClient;
         this.codeAnalysisMapper = codeAnalysisMapper;
         this.auditoriaDetalleRepository = auditoriaDetalleRepository;
+        this.auditoriaDetalleResponseMapper = auditoriaDetalleResponseMapper;
     }
 
     @Override
     public AnalyzeAuditoriaResponse execute(
             AnalyzeAuditoriaRequest request,
-            String username
+            String username,
+            String token
     ) {
 
         User user = userRepository.findByUsername(username)
@@ -71,7 +76,8 @@ public class AnalyzeAuditoriaUseCaseImpl
                 codeAnalysisClient.analyzeCode(
                         request.getCodigoFuente(),
                         request.getLenguaje(),
-                        request.getTipoAnalisis()
+                        request.getTipoAnalisis(),
+                        token
                 );
 
         CodeAnalysisResult parsed =
@@ -101,7 +107,9 @@ public class AnalyzeAuditoriaUseCaseImpl
         response.setAuditoriaId(saved.getId());
         response.setEstado(saved.getEstado().name());
         response.setFechaHora(saved.getFechaCreacion());
-
+        response.setReingenieria(saved.getReingenieria());
+        response.setCodigoExplicado(saved.getCodigoExplicado());
+        response.setIssues(auditoriaDetalleResponseMapper.toResponseList(saved.getDetalles()));
         return response;
     }
 }

@@ -30,11 +30,12 @@ public class AuditController {
     ) {
         System.out.println("ENTRO A AUDIT CONTROLLER");
         String username = authentication.getName();
-
+        String token = (String) authentication.getCredentials();
         AnalyzeAuditoriaResponse response =
                 analyzeAuditoriaUseCase.execute(
                         request,
-                        username
+                        username,
+                        token
                 );
 
         return ResponseEntity

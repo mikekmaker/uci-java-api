@@ -5,6 +5,7 @@ public interface CodeAnalysisClient {
     String analyzeCode(
             String codigoFuente,
             String lenguaje,
-            String tipoAnalisis
+            String tipoAnalisis,
+            String token
     );
 }

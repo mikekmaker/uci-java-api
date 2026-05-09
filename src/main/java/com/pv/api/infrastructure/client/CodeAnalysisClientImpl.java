@@ -26,9 +26,10 @@ public class CodeAnalysisClientImpl
     public String analyzeCode(
             String codigoFuente,
             String lenguaje,
-            String tipoAnalisis
+            String tipoAnalisis,
+            String token
     ) {
-        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzc4Mjg2Mjc3fQ.em2C1XX43wEdiPFxkB4SwChQIevlVLrz82ANXkqaTrM";
+
         String url = "https://uci-py-api.onrender.com/analyze";
 
         HttpHeaders headers = new HttpHeaders();

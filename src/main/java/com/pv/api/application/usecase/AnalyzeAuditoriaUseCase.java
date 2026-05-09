@@ -7,6 +7,7 @@ public interface AnalyzeAuditoriaUseCase {
 
     AnalyzeAuditoriaResponse execute(
             AnalyzeAuditoriaRequest request,
-            String username
+            String username,
+            String token
     );
 }
