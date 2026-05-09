@@ -1,8 +1,14 @@
 package com.pv.api.infrastructure.client;
 
 import com.pv.api.domain.service.CodeAnalysisClient;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class CodeAnalysisClientImpl
@@ -22,7 +28,25 @@ public class CodeAnalysisClientImpl
             String lenguaje,
             String tipoAnalisis
     ) {
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzc4Mjg2Mjc3fQ.em2C1XX43wEdiPFxkB4SwChQIevlVLrz82ANXkqaTrM";
+        String url = "https://uci-py-api.onrender.com/analyze";
 
-        return "ANALISIS_PENDIENTE";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(token);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("code", codigoFuente);
+        body.put("language", lenguaje);
+        //body.put("tipoAnalisis", tipoAnalisis);
+
+        HttpEntity<Map<String, Object>> request =
+                new HttpEntity<>(body, headers);
+
+        return restTemplate.postForObject(
+                url,
+                request,
+                String.class
+        );
     }
 }

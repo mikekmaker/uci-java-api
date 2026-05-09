@@ -2,7 +2,10 @@ package com.pv.api.infrastructure.persistence.mapper;
 
 import com.pv.api.domain.model.AuditStatus;
 import com.pv.api.domain.model.Auditoria;
+import com.pv.api.infrastructure.persistence.entity.AuditoriaDetalleEntity;
 import com.pv.api.infrastructure.persistence.entity.AuditoriaEntity;
+
+import java.util.List;
 
 public class AuditoriaMapper {
 
@@ -21,13 +24,16 @@ public class AuditoriaMapper {
                 entity.getLenguaje(),
                 entity.getCodigoExplicado(),
                 entity.getReingenieria(),
-                AuditStatus.valueOf(entity.getEstado()),
+                entity.getEstado() != null
+                        ? AuditStatus.valueOf(entity.getEstado())
+                        : null,
                 entity.getErrorMensaje(),
                 entity.getErrorDetalle(),
                 entity.getTiempoEjecucion(),
                 entity.getFechaCreacion(),
                 entity.getFechaActualizacion(),
-                AuditoriaDetalleMapper.toDomainList(entity.getDetalles())
+                AuditoriaDetalleMapper.toDomainList(entity.getDetalles()),
+                entity.getResultadoGeneral()
         );
     }
 
@@ -56,9 +62,20 @@ public class AuditoriaMapper {
         entity.setFechaCreacion(domain.getFechaCreacion());
         entity.setFechaActualizacion(domain.getFechaActualizacion());
 
-        entity.setDetalles(
-                AuditoriaDetalleMapper.toEntityList(domain.getDetalles())
-        );
+        entity.setResultadoGeneral(domain.getResultadoGeneral());
+
+        List<AuditoriaDetalleEntity> detalles =
+                AuditoriaDetalleMapper.toEntityList(domain.getDetalles());
+
+
+        if (detalles != null) {
+
+            detalles.forEach(detalle ->
+                    detalle.setAuditoria(entity)
+            );
+        }
+
+        entity.setDetalles(detalles);
 
         return entity;
     }
