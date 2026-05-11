@@ -142,7 +142,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
+			<!--<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-toolchains-plugin</artifactId>
 					<version>3.1.0</version>
@@ -156,7 +156,7 @@
 						<jdk><version>19</version></jdk>
 					</toolchains>
 				</configuration>
-			</plugin>
+			</plugin>-->
 		</plugins>
 	</build>
 
