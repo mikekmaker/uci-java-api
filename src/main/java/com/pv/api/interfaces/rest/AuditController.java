@@ -8,6 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import com.pv.api.application.dto.AuditoriaHeaderResponse;
+import com.pv.api.application.usecase.GetAuditoriaUseCase;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/audit")
@@ -16,11 +20,15 @@ public class AuditController {
     private final AnalyzeAuditoriaUseCase
             analyzeAuditoriaUseCase;
 
+    private final GetAuditoriaUseCase
+            getAuditoriaUseCase;
+
     public AuditController(
-            AnalyzeAuditoriaUseCase analyzeAuditoriaUseCase
+            AnalyzeAuditoriaUseCase analyzeAuditoriaUseCase,
+            GetAuditoriaUseCase getAuditoriaUseCase
     ) {
-        this.analyzeAuditoriaUseCase =
-                analyzeAuditoriaUseCase;
+        this.analyzeAuditoriaUseCase = analyzeAuditoriaUseCase;
+        this.getAuditoriaUseCase = getAuditoriaUseCase;
     }
 
     @PostMapping("/analyze")
@@ -41,5 +49,41 @@ public class AuditController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
+    }
+
+    @GetMapping("/registro")
+    public ResponseEntity<List<AuditoriaHeaderResponse>>
+    getAll(
+            Authentication authentication
+    ) {
+
+        String username =
+                authentication.getName();
+
+        List<AuditoriaHeaderResponse> response =
+                getAuditoriaUseCase.getAll(
+                        username
+                );
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/registro/{auditoriaId}")
+    public ResponseEntity<AuditoriaHeaderResponse>
+    getById(
+            @PathVariable Long auditoriaId,
+            Authentication authentication
+    ) {
+
+        String username =
+                authentication.getName();
+
+        AuditoriaHeaderResponse response =
+                getAuditoriaUseCase.getById(
+                        auditoriaId,
+                        username
+                );
+
+        return ResponseEntity.ok(response);
     }
 }
