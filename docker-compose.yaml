@@ -9,39 +9,44 @@ services:
     ports:
       - "8080:8080"
     environment:
-      # Configuraciones de conexión a la base de datos inyectadas a Spring Boot
+      # Credenciales y ruta de conexión a la base de datos inyectadas a Spring Boot
       - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/uci_database?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=api_user
       - SPRING_DATASOURCE_PASSWORD=api_pass
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update # Actualiza el esquema según tus entidades
+      # Actualiza el esquema de la base de datos automáticamente según tus entidades
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      # Especifica el dialecto de MySQL para Hibernate
       - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.MySQLDialect
-    restart: unless-stopped
     depends_on:
       db:
-        condition: service_healthy # Espera a que MySQL esté 100% listo antes de iniciar la API
+        # La API solo se iniciará cuando el healthcheck de MySQL responda correctamente
+        condition: service_healthy
     networks:
       - uci-network
+    restart: unless-stopped
 
   db:
     image: mysql:8.0
     container_name: uci-mysql-db
-    restart: unless-stopped
     environment:
       MYSQL_DATABASE: uci_database
       MYSQL_USER: api_user
       MYSQL_PASSWORD: api_pass
-      MYSQL_ROOT_PASSWORD: root_secret_password # Cambiar en producción
+      MYSQL_ROOT_PASSWORD: root_secret_password # Cambiar por una contraseña segura
     ports:
       - "3306:3306"
     volumes:
+      # Volumen persistente para no perder datos si se destruye el contenedor
       - mysql_data:/var/lib/mysql
     healthcheck:
+      # Comprueba que el servicio de MySQL esté listo para aceptar conexiones
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - uci-network
+    restart: unless-stopped
 
 networks:
   uci-network:
