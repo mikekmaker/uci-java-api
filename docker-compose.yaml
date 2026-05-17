@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: uci-java-api
+    ports:
+      - "8080:8080"
+    environment:
+      # Configuraciones de conexión a la base de datos inyectadas a Spring Boot
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/uci_database?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=api_user
+      - SPRING_DATASOURCE_PASSWORD=api_pass
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update # Actualiza el esquema según tus entidades
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.MySQLDialect
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy # Espera a que MySQL esté 100% listo antes de iniciar la API
+    networks:
+      - uci-network
+
+  db:
+    image: mysql:8.0
+    container_name: uci-mysql-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: uci_database
+      MYSQL_USER: api_user
+      MYSQL_PASSWORD: api_pass
+      MYSQL_ROOT_PASSWORD: root_secret_password # Cambiar en producción
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - uci-network
+
+networks:
+  uci-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
